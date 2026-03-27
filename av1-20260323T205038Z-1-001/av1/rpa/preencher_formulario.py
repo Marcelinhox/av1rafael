@@ -9,13 +9,14 @@ from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 
 def preencher_formulario():
-    # Caminho do Excel
-    excel_path = 'dados/faturas.xlsx'
+    # Caminho absoluto para o Excel
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    excel_path = os.path.join(base_dir, 'rpa', 'dados', 'faturas.xlsx')
+
     if not os.path.exists(excel_path):
         print(f"Erro: Arquivo {excel_path} não encontrado.")
         return
 
-    # Tenta abrir o navegador (Chromium no ambiente sandbox)
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')
     options.add_argument('--no-sandbox')
@@ -27,8 +28,6 @@ def preencher_formulario():
             wait = WebDriverWait(driver, 10)
 
             df = pd.read_excel(excel_path)
-
-            # Precisamos de um workbook para pintar as células
             wb = load_workbook(excel_path)
             ws = wb.active
 
@@ -36,7 +35,6 @@ def preencher_formulario():
 
             for index, row in df.iterrows():
                 try:
-                    # Uso de waits dinâmicos em vez de sleeps
                     nome_field = wait.until(EC.element_to_be_clickable((By.NAME, "nome")))
                     nome_field.clear()
                     nome_field.send_keys(str(row.get('nome', 'Cliente '+str(index))))
@@ -59,14 +57,11 @@ def preencher_formulario():
                     endereco_field.clear()
                     endereco_field.send_keys(str(row.get('endereco', 'Endereço não informado')))
 
-                    # Clicar em Cadastrar
                     submit_btn = driver.find_element(By.XPATH, "//button[@value='cadastrar']")
                     submit_btn.click()
 
-                    # Esperar pela mensagem de sucesso ou erro (refresh da página)
                     wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".sucesso, .erro")))
 
-                    # Verificar resultado
                     page = driver.page_source.lower()
                     if "sucesso" in page or "já cadastrado" in page:
                         print(f"Linha {index+2}: Processado com sucesso.")
