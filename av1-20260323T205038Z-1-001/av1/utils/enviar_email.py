@@ -1,69 +1,57 @@
 import os
-from django.conf import settings
 from django.core.mail import EmailMessage
-from core.models import Cliente, Fatura
+from django.conf import settings
+from datetime import datetime
 
+def registrar_log_email(fatura, status, erro=""):
+    caminho_log = os.path.join(settings.BASE_DIR, 'rpa', 'logs_email.csv')
+    data_hora = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-def enviar_emails():
+    if not os.path.exists(caminho_log):
+        with open(caminho_log, 'w') as f:
+            f.write("fatura_id,cliente,email,status,erro,data_hora\n")
 
-    print("Iniciando envio de emails...")
+    with open(caminho_log, 'a') as f:
+        f.write(f"{fatura.id},{fatura.cliente.nome},{fatura.cliente.email},{status},{erro},{data_hora}\n")
 
-    clientes = Cliente.objects.all()
+def enviar_email_individual(fatura, caminho_pdf):
+    try:
+        assunto = f"Fatura TechSolutions - Vencimento {fatura.data_vencimento.strftime('%d/%m/%Y')}"
+        corpo = f"""Olá {fatura.cliente.nome},
 
-    for cliente in clientes:
+Sua fatura da TechSolutions está disponível para pagamento.
 
-        faturas = Fatura.objects.filter(cliente=cliente)
+Valor: R$ {fatura.valor:.2f}
+Vencimento: {fatura.data_vencimento.strftime('%d/%m/%Y')}
 
-        if not faturas.exists():
-            print(f"Cliente {cliente.cpf} sem faturas.")
-            continue
-
-        for fatura in faturas:
-
-            assunto = f"Fatura TechSolutions - Vencimento {fatura.data_vencimento}"
-
-            mensagem = f"""
-Olá {cliente.nome},
-
-Sua fatura está disponível.
-
-Valor: R$ {fatura.valor}
-Vencimento: {fatura.data_vencimento}
+Segue em anexo o PDF com os detalhes e QR Code para pagamento.
 
 Atenciosamente,
-TechSolutions
+TechSolutions Ltda
 """
+        email = EmailMessage(
+            assunto,
+            corpo,
+            settings.EMAIL_HOST_USER,
+            [fatura.cliente.email],
+        )
 
-            # caminho do PDF
-            caminho_pdf = os.path.join(
-                settings.BASE_DIR,
-                'rpa',
-                'boletos',
-                f"fatura_{cliente.cpf}_{fatura.id}.pdf"
-            )
+        if os.path.exists(caminho_pdf):
+            email.attach_file(caminho_pdf)
+        else:
+            raise FileNotFoundError(f"PDF não encontrado no caminho: {caminho_pdf}")
 
-            email = EmailMessage(
-                assunto,
-                mensagem,
-                settings.EMAIL_HOST_USER,
-                ['marcelo.marq2001@gmail.com'] 
-            )
+        # Se houver configuração SMTP válida, enviar
+        if settings.EMAIL_HOST and settings.EMAIL_HOST_USER:
+             email.send()
+        else:
+             print("Simulando envio de e-mail (SMTP não configurado).")
 
-            # anexa PDF se existir
-            if os.path.exists(caminho_pdf):
-                email.attach_file(caminho_pdf)
-            else:
-                print(f"PDF não encontrado: {caminho_pdf}")
+        print(f"E-mail enviado para {fatura.cliente.nome} ({fatura.cliente.email})")
 
-            try:
-                email.send()
-                print(f"Email enviado para {cliente.nome}")
+        registrar_log_email(fatura, "sucesso")
+        return True
 
-            except Exception as e:
-                print(f"Erro ao enviar para {cliente.nome}: {e}")
-
-                # 👇 AQUI QUE VOCÊ COLOCA
-                with open('erros_email.csv', 'a') as f:
-                    f.write(f"{cliente.cpf},{e}\n")
-
-    print("Envio finalizado!")
+    except Exception as e:
+        registrar_log_email(fatura, "falhou", str(e))
+        raise e

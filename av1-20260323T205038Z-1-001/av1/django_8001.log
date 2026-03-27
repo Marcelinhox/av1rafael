@@ -1,0 +1,9 @@
+Watching for file changes with StatReloader
+[27/Mar/2026 13:47:40] "GET / HTTP/1.1" 200 4220
+[27/Mar/2026 13:47:44] "POST / HTTP/1.1" 200 4455
+[27/Mar/2026 13:47:46] "POST / HTTP/1.1" 200 4456
+[27/Mar/2026 13:47:48] "GET /faturas/ HTTP/1.1" 200 3400
+[27/Mar/2026 13:47:49] "POST /faturas/notificar/1/ HTTP/1.1" 302 0
+[27/Mar/2026 13:47:49] "GET /faturas/ HTTP/1.1" 200 3398
+[27/Mar/2026 13:47:52] "POST /faturas/notificar/1/ HTTP/1.1" 302 0
+[27/Mar/2026 13:47:52] "GET /faturas/ HTTP/1.1" 200 3398

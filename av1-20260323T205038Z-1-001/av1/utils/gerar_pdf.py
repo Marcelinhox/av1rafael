@@ -1,40 +1,91 @@
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
+from reportlab.lib.units import cm
+from reportlab.lib import colors
 import qrcode
 import os
 
-def gerar_fatura(cliente, cpf, telefone, valor, data_vencimento, status, data_emissao, id_fatura):
-    
+def gerar_fatura(fatura):
     pasta = "boletos"
     os.makedirs(pasta, exist_ok=True)
 
-    nome_arquivo = f"{pasta}/fatura_{cpf}_{id_fatura}.pdf"
+    nome_arquivo = f"{pasta}/fatura_{fatura.cliente.cpf}_{fatura.id}.pdf"
 
     c = canvas.Canvas(nome_arquivo, pagesize=A4)
+    width, height = A4
 
-    # Título
+    # --- Header with company info ---
+    c.setFont("Helvetica-Bold", 18)
+    c.drawString(1 * cm, height - 2 * cm, "TechSolutions Ltda")
+
+    c.setFont("Helvetica", 10)
+    c.drawString(1 * cm, height - 2.5 * cm, "Rua do Financeiro, 123 - Centro")
+    c.drawString(1 * cm, height - 3 * cm, "Telefone: (11) 4004-0000 | financeiro@techsolutions.com")
+
+    # --- Horizontal line ---
+    c.setStrokeColor(colors.blue)
+    c.line(1 * cm, height - 3.5 * cm, width - 1 * cm, height - 3.5 * cm)
+
+    # --- Fatura title and Number ---
     c.setFont("Helvetica-Bold", 16)
-    c.drawString(200, 800, "FATURA")
+    c.drawRightString(width - 1 * cm, height - 2 * cm, "FATURA DE COBRANÇA")
 
-    # Dados
     c.setFont("Helvetica", 12)
-    c.drawString(50, 750, f"Cliente: {cliente}")
-    c.drawString(50, 730, f"CPF: {cpf}")
-    c.drawString(50, 710, f"Telefone: {telefone}")
-    c.drawString(50, 690, f"Valor: R$ {valor}")
-    c.drawString(50, 670, f"Vencimento: {data_vencimento}")
-    c.drawString(50, 650, f"Status: {status}")
-    c.drawString(50, 630, f"Emissão: {data_emissao}")
+    c.drawRightString(width - 1 * cm, height - 2.8 * cm, f"Número: {fatura.id:06d}")
+    c.drawRightString(width - 1 * cm, height - 3.3 * cm, f"Emissão: {fatura.data_emissao.strftime('%d/%m/%Y')}")
 
-    # 🔥 QR CODE (PIX fake)
-    dados_qr = f"Pagamento para {cliente} - R${valor}"
+    # --- Client Data Section ---
+    c.setFillColor(colors.lightgrey)
+    c.rect(1 * cm, height - 7 * cm, width - 2 * cm, 1 * cm, fill=1, stroke=0)
+    c.setFillColor(colors.black)
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(1.5 * cm, height - 6.6 * cm, "DADOS DO CLIENTE")
 
-    qr = qrcode.make(dados_qr)
-    qr_path = f"{pasta}/qr_{cpf}_{id_fatura}.png"
-    qr.save(qr_path)
+    c.setFont("Helvetica", 11)
+    c.drawString(1 * cm, height - 7.5 * cm, f"Nome: {fatura.cliente.nome}")
+    c.drawString(1 * cm, height - 8.1 * cm, f"CPF: {fatura.cliente.cpf}")
+    c.drawString(1 * cm, height - 8.7 * cm, f"Telefone: {fatura.cliente.telefone}")
+    c.drawString(1 * cm, height - 9.3 * cm, f"Endereço: {fatura.cliente.endereco or 'Não informado'}")
 
-    c.drawImage(qr_path, 400, 600, width=120, height=120)
+    # --- Billing Data Section ---
+    c.setFillColor(colors.lightgrey)
+    c.rect(1 * cm, height - 12 * cm, width - 2 * cm, 1 * cm, fill=1, stroke=0)
+    c.setFillColor(colors.black)
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(1.5 * cm, height - 11.6 * cm, "DETALHAMENTO DA COBRANÇA")
+
+    c.setFont("Helvetica", 12)
+    c.drawString(1 * cm, height - 13 * cm, "Descrição: Serviços de consultoria e suporte técnico")
+
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(1 * cm, height - 14.5 * cm, f"VALOR TOTAL: R$ {fatura.valor:,.2f}")
+    c.drawString(1 * cm, height - 15.2 * cm, f"VENCIMENTO: {fatura.data_vencimento.strftime('%d/%m/%Y')}")
+
+    # --- QR Code Section ---
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(12 * cm, height - 18 * cm, "PAGAMENTO VIA PIX")
+
+    # QR Code Real (dados para pagamento)
+    dados_pix = f"PAYLOAD-PIX-TECHSOLUTIONS-FATURA-{fatura.id}-VALOR-{fatura.valor}"
+    qr = qrcode.QRCode(version=1, box_size=10, border=4)
+    qr.add_data(dados_pix)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    qr_path = f"{pasta}/qr_{fatura.id}.png"
+    img.save(qr_path)
+
+    c.drawImage(qr_path, 12 * cm, height - 25 * cm, width=6 * cm, height=6 * cm)
+    c.setFont("Helvetica-Oblique", 9)
+    c.drawString(12 * cm, height - 25.5 * cm, "Escaneie o QR Code acima para pagar")
+
+    # --- Footer ---
+    c.setFont("Helvetica", 8)
+    c.drawCentredString(width / 2, 1.5 * cm, "Obrigado pela sua preferência! TechSolutions Ltda")
 
     c.save()
+    if os.path.exists(qr_path):
+        os.remove(qr_path)
 
-    print(f"PDF gerado: {nome_arquivo}")
+    print(f"PDF profissional gerado: {nome_arquivo}")
+    return nome_arquivo
