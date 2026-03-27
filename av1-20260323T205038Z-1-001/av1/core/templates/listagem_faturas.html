@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>TechSolutions - Listagem de Faturas</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(to right, #007BFF, #00AEEF);
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 900px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h2 { color: #007BFF; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #007BFF;
+        }
+
+        tr:nth-child(even) { background-color: #f9f9f9; }
+
+        .status-pendente { color: #ffc107; font-weight: bold; }
+        .status-enviado { color: #28a745; font-weight: bold; }
+        .status-falhou { color: #dc3545; font-weight: bold; }
+
+        button {
+            padding: 10px 20px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        button:hover { background: #0056b3; }
+
+        .btn-back { background: #6c757d; float: left; }
+        .btn-back:hover { background: #5a6268; }
+
+        .btn-whatsapp { background: #25D366; font-size: 0.8em; padding: 5px 10px; }
+        .btn-email { background: #EA4335; font-size: 0.8em; padding: 5px 10px; }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <a href="{% url 'cadastro' %}" class="btn-back"><button class="btn-back">⬅ Voltar</button></a>
+        <h1>Listagem de Faturas</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Valor</th>
+                    <th>Vencimento</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fatura in faturas %}
+                <tr>
+                    <td>{{ fatura.id }}</td>
+                    <td>{{ fatura.cliente.nome }}</td>
+                    <td>R$ {{ fatura.valor|floatformat:2 }}</td>
+                    <td>{{ fatura.data_vencimento|date:"d/m/Y" }}</td>
+                    <td class="status-{{ fatura.status }}">{{ fatura.status|capfirst }}</td>
+                    <td>
+                        <form method="post" action="{% url 'notificar_fatura' fatura.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" name="tipo" value="whatsapp" class="btn-whatsapp">WhatsApp</button>
+                            <button type="submit" name="tipo" value="email" class="btn-email">E-mail</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center;">Nenhuma fatura cadastrada.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,2 @@
+fatura_id,cliente,email,status,erro,data_hora
+1,Cliente Teste 2,teste2@example.com,sucesso,,2026-03-27 13:47:52
