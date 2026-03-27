@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(to right, #007BFF, #00AEEF);
+            font-family: Arial;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 350px;
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007BFF;
+            color: white;
+            border: none;
+        }
+
+        .btn-pdf {
+            background: red;
+            margin-top: 10px;
+        }
+
+        .erro {
+            color: red;
+        }
+
+        .sucesso {
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>Cadastro</h2>
+
+        {% if messages %}
+        {% for message in messages %}
+        <p class="{% if message.tags == 'error' %}erro{% else %}sucesso{% endif %}">
+            {{ message }}
+        </p> {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="cpf" placeholder="CPF" value="{{ request.POST.cpf }}">
+            <input type="text" name="nome" placeholder="Nome" value="{{ request.POST.nome }}">
+            <input type="text" name="telefone" placeholder="Telefone" value="{{ request.POST.telefone }}">
+            <button type="submit" name="acao" value="cadastrar">Cadastrar</button>
+            <button type="submit" name="acao" value="gerar_pdf" class="btn-pdf">
+                📄 Gerar Faturas
+            </button>
+        </form>
+
+    </div>
+
+</body>
+
+</html>
