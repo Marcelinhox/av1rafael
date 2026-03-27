@@ -35,4 +35,5 @@ class BillingSystemTest(TestCase):
         response = self.client.get('/faturas/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "João Silva")
-        self.assertContains(response, "150.50")
+        # Django l10n formats with comma in pt-br
+        self.assertContains(response, "150,50")

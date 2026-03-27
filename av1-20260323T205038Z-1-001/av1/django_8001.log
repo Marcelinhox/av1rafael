@@ -7,3 +7,73 @@ Watching for file changes with StatReloader
 [27/Mar/2026 13:47:49] "GET /faturas/ HTTP/1.1" 200 3398
 [27/Mar/2026 13:47:52] "POST /faturas/notificar/1/ HTTP/1.1" 302 0
 [27/Mar/2026 13:47:52] "GET /faturas/ HTTP/1.1" 200 3398
+/app/av1-20260323T205038Z-1-001/av1/utils/gerar_pdf.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 27, 2026 - 13:47:05
+Django version 6.0.3, using settings 'av1.settings'
+Starting development server at http://127.0.0.1:8001/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+PDF profissional gerado: boletos/fatura_22233344455_1.pdf
+Abrindo WhatsApp para Cliente Teste 2 (5511988887777)...
+Simulando envio de WhatsApp (PyAutoGUI não disponível).
+E-mail enviado para Cliente Teste 2 (teste2@example.com)
+Watching for file changes with StatReloader
+/app/av1-20260323T205038Z-1-001/av1/utils/enviar_whatsapp.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 27, 2026 - 14:14:16
+Django version 6.0.3, using settings 'av1.settings'
+Starting development server at http://127.0.0.1:8001/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Watching for file changes with StatReloader
+/app/av1-20260323T205038Z-1-001/av1/utils/enviar_whatsapp.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 27, 2026 - 14:14:47
+Django version 6.0.3, using settings 'av1.settings'
+Starting development server at http://127.0.0.1:8001/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Watching for file changes with StatReloader
+/app/av1-20260323T205038Z-1-001/av1/av1/settings.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+
+You have 19 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth, contenttypes, core, sessions.
+Run 'python manage.py migrate' to apply them.
+March 27, 2026 - 14:17:27
+Django version 6.0.3, using settings 'av1.settings'
+Starting development server at http://127.0.0.1:8001/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Watching for file changes with StatReloader
+/app/av1-20260323T205038Z-1-001/av1/utils/gerar_pdf.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+
+You have 19 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth, contenttypes, core, sessions.
+Run 'python manage.py migrate' to apply them.
+March 27, 2026 - 11:19:01
+Django version 6.0.3, using settings 'av1.settings'
+Starting development server at http://127.0.0.1:8001/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Watching for file changes with StatReloader

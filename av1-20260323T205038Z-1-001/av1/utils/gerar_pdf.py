@@ -4,6 +4,7 @@ from reportlab.lib.units import cm
 from reportlab.lib import colors
 import qrcode
 import os
+from django.conf import settings
 
 def gerar_fatura(fatura):
     pasta = "boletos"
@@ -65,8 +66,9 @@ def gerar_fatura(fatura):
     c.setFont("Helvetica-Bold", 12)
     c.drawString(12 * cm, height - 18 * cm, "PAGAMENTO VIA PIX")
 
-    # QR Code Real (dados para pagamento)
-    dados_pix = f"PAYLOAD-PIX-TECHSOLUTIONS-FATURA-{fatura.id}-VALOR-{fatura.valor}"
+    # QR Code com CPF via settings (variável de ambiente)
+    pix_key = getattr(settings, 'PIX_KEY_CPF', '12571848909')
+    dados_pix = f"PIX-CHAVE-CPF-{pix_key}-FATURA-{fatura.id}-VALOR-{fatura.valor}"
     qr = qrcode.QRCode(version=1, box_size=10, border=4)
     qr.add_data(dados_pix)
     qr.make(fit=True)
@@ -77,7 +79,7 @@ def gerar_fatura(fatura):
 
     c.drawImage(qr_path, 12 * cm, height - 25 * cm, width=6 * cm, height=6 * cm)
     c.setFont("Helvetica-Oblique", 9)
-    c.drawString(12 * cm, height - 25.5 * cm, "Escaneie o QR Code acima para pagar")
+    c.drawString(12 * cm, height - 25.5 * cm, f"Escaneie o QR Code acima para pagar (Chave: {pix_key})")
 
     # --- Footer ---
     c.setFont("Helvetica", 8)
